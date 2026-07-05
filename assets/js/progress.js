@@ -61,9 +61,15 @@ export function completeLesson(lessonId) {
   const progress = getProgress();
   const completedLessonIds = new Set(progress.completedLessonIds);
   completedLessonIds.add(id);
+  const currentLastCompletedLessonId = Number.isInteger(Number(progress.lastCompletedLessonId))
+    ? Number(progress.lastCompletedLessonId)
+    : null;
+  const lastCompletedLessonId = currentLastCompletedLessonId === null
+    ? id
+    : Math.max(currentLastCompletedLessonId, id);
 
   return saveProgress({
-    lastCompletedLessonId: id,
+    lastCompletedLessonId,
     completedLessonIds: [...completedLessonIds].sort((a, b) => a - b),
     updatedAt: new Date().toISOString()
   });

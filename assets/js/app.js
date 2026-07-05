@@ -1,4 +1,4 @@
-import { getLessonById, getNextLessonId } from './lessons.js';
+import { getLessonById, getNextLessonId, LESSONS } from './lessons.js';
 import { completeLesson, getNextRoute, getProgress } from './progress.js';
 import { initVoices, speakText, stopSpeech } from './audio.js';
 import { getRecorderState, playRecording, startRecording, stopRecording } from './recorder.js';
@@ -93,7 +93,7 @@ function bindCommonActions(lessonId) {
 function initHome() {
   const progress = getProgress();
   const nextRoute = getNextRoute(progress);
-  renderHome(container, { progress, nextRoute });
+  renderHome(container, { lessons: LESSONS, progress, nextRoute });
 
   container.addEventListener('click', (event) => {
     const button = event.target.closest('[data-action="continue"]');

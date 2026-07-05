@@ -26,19 +26,112 @@ function instructionText(item) {
   return escapeHtml(item);
 }
 
+const MEANING_ZH = {
+  'a': '一个/一只',
+  'A cat.': '一只猫。',
+  'A mat.': '一个垫子。',
+  'A bat.': '一只蝙蝠/一根球棒。',
+  'A hat.': '一顶帽子。',
+  'A can.': '一个罐子。',
+  'A fan.': '一个风扇。',
+  'A man.': '一个男人。',
+  'A pan.': '一个平底锅。',
+  'A pin.': '一枚别针。',
+  'A bit.': '一点点。',
+  'A big pig.': '一只大猪。',
+  'A cat can nap.': '一只猫会小睡。',
+  'A cat can sit.': '一只猫会坐。',
+  'A cat sat.': '一只猫坐下了。',
+  'A man can sit.': '一个男人会坐。',
+  'A pig can sit.': '一只猪会坐。',
+  'A big pig can sit.': '一只大猪会坐。',
+  'A cat.': '一只猫。',
+  'A pin.': '一枚别针。',
+  'A pan.': '一个平底锅。',
+  'at': '在...',
+  'bat': '球棒/蝙蝠',
+  'big': '大的',
+  'bit': '一点点',
+  'can': '能/罐子',
+  'cap': '鸭舌帽',
+  'cat': '猫',
+  'Circle.': '圈出来。',
+  'Circle cat.': '把 cat 圈出来。',
+  'Circle fan.': '把 fan 圈出来。',
+  'fan': '风扇',
+  'fin': '鱼鳍',
+  'hat': '帽子',
+  'hit': '击打',
+  'Hit it.': '打它。',
+  'I see a cap.': '我看到一顶鸭舌帽。',
+  'I see a cat.': '我看到一只猫。',
+  'I see a fan.': '我看到一个风扇。',
+  'I see a hat.': '我看到一顶帽子。',
+  'I see a map.': '我看到一张地图。',
+  'I see a mat.': '我看到一个垫子。',
+  'I see a pan.': '我看到一个平底锅。',
+  'I see a pig.': '我看到一只猪。',
+  'I see a pin.': '我看到一枚别针。',
+  'I see a pit.': '我看到一个坑。',
+  'I see a wig.': '我看到一顶假发。',
+  'Listen.': '听。',
+  'Look.': '看。',
+  'man': '男人',
+  'map': '地图',
+  'mat': '垫子',
+  'nap': '小睡',
+  'pan': '平底锅',
+  'Pat a pan.': '轻拍一个平底锅。',
+  'pat': '轻拍',
+  'pig': '猪',
+  'pin': '别针',
+  'pit': '坑',
+  'Point.': '指出来。',
+  'Point to bat.': '指向 bat。',
+  'Point to hat.': '指向 hat。',
+  'Read.': '读。',
+  'Read it.': '读它。',
+  'Repeat.': '再读一遍。',
+  'Sam': '人名 Sam',
+  'Sam sat.': 'Sam 坐下了。',
+  'Sam sat at a mat.': 'Sam 坐在垫子旁边。',
+  'sat': '坐了',
+  'Say.': '说出来。',
+  'Say cat.': '说 cat。',
+  'Say hat.': '说 hat。',
+  'Say it.': '说出来。',
+  'sit': '坐',
+  'Sit.': '坐下。',
+  'Stop.': '停。',
+  'Try again.': '再试一次。',
+  'wig': '假发'
+};
+
+function getMeaningZh(text, explicitMeaning) {
+  if (explicitMeaning && !explicitMeaning.includes('?')) {
+    return explicitMeaning;
+  }
+
+  return MEANING_ZH[text] || null;
+}
+
 function normalizePracticeItem(item) {
   if (item && typeof item === 'object') {
+    const text = item.text;
+
     return {
-      text: item.text,
-      listenText: item.listenText || item.text,
-      hint: item.hint || null
+      text,
+      listenText: item.listenText || text,
+      hint: item.hint || null,
+      meaningZh: getMeaningZh(text, item.meaningZh)
     };
   }
 
   return {
     text: item,
     listenText: item,
-    hint: null
+    hint: null,
+    meaningZh: getMeaningZh(item, null)
   };
 }
 
@@ -49,12 +142,53 @@ function itemCard(item, kind) {
   return `
     <article class="practice-card ${kind === 'word' ? 'word-card' : 'sentence-card'}">
       <p class="practice-text">${escapeHtml(practiceItem.text)}</p>
+      ${practiceItem.meaningZh ? `<p class="meaning-hint">意思：${escapeHtml(practiceItem.meaningZh)}</p>` : ''}
       <p class="practice-hint">${practiceItem.hint ? escapeHtml(practiceItem.hint) : '先听，再读 / Listen, then say it.'}</p>
       <button class="btn btn-listen" type="button" data-listen="${escapeHtml(practiceItem.listenText)}" aria-label="${escapeHtml(label)}">
         Listen 听
       </button>
     </article>
   `;
+}
+
+function lessonCard(lesson, progress) {
+  const isCompleted = progress.completedLessonIds.includes(lesson.id);
+  const isNext = progress.lastCompletedLessonId === null
+    ? lesson.id === 0
+    : lesson.id === progress.lastCompletedLessonId + 1;
+  const href = lesson.id === 0 ? 'onboarding.html' : `lesson.html?lesson=${lesson.id}`;
+  const status = isCompleted ? '已完成' : isNext ? '下一课' : '可复习';
+
+  return `
+    <a class="lesson-map-card ${isCompleted ? 'is-complete' : ''} ${isNext ? 'is-next' : ''}" href="${href}">
+      <span class="lesson-map-status">${status}</span>
+      <span class="lesson-map-title">${escapeHtml(lesson.titleZh || lesson.title)}</span>
+      <span class="lesson-map-focus">${escapeHtml(lesson.focusZh || lesson.focus || '')}</span>
+    </a>
+  `;
+}
+
+function renderLessonOverview(lessons, progress) {
+  const groups = lessons.reduce((result, lesson) => {
+    const groupName = lesson.id === 0 ? '开始' : `第 ${lesson.week || 1} 周`;
+    if (!result.has(groupName)) {
+      result.set(groupName, []);
+    }
+    result.get(groupName).push(lesson);
+    return result;
+  }, new Map());
+
+  return [...groups.entries()].map(([groupName, groupLessons], index) => `
+    <section class="lesson-map-group" aria-labelledby="lesson-map-group-${index}">
+      <div class="section-heading">
+        <p class="eyebrow">${escapeHtml(groupName)}</p>
+        <h3 id="lesson-map-group-${index}">${groupName === '开始' ? '使用引导' : `${escapeHtml(groupName)}课程`}</h3>
+      </div>
+      <div class="lesson-map-grid">
+        ${groupLessons.map((lesson) => lessonCard(lesson, progress)).join('')}
+      </div>
+    </section>
+  `).join('');
 }
 
 function recorderPanel() {
@@ -100,6 +234,13 @@ export function renderHome(container, viewModel) {
       <p class="eyebrow">Progress 进度</p>
       <h2 id="progress-title">已完成 ${completedCount} 步</h2>
       <p class="card-copy">完成记录：${completedCount ? escapeHtml(viewModel.progress.completedLessonIds.join(', ')) : '还没有完成课程'}。</p>
+    </section>
+
+    <section class="card lesson-map" aria-labelledby="lesson-map-title">
+      <p class="eyebrow">Course Map 课程总览</p>
+      <h2 id="lesson-map-title">所有课程都可以点进去复习</h2>
+      <p class="card-copy">“继续学习”负责带你去下一课；下面的总览可以回到任意旧课复习，不会丢进度。</p>
+      ${renderLessonOverview(viewModel.lessons, viewModel.progress)}
     </section>
   `;
 }
@@ -205,6 +346,24 @@ function renderPracticeGuide(lesson) {
   `;
 }
 
+function renderSimplePracticeSection({ titleId, eyebrow, title, items, kind = 'sentence' }) {
+  if (!items?.length) {
+    return '';
+  }
+
+  return `
+    <section class="lesson-section" aria-labelledby="${titleId}">
+      <div class="section-heading">
+        <p class="eyebrow">${eyebrow}</p>
+        <h2 id="${titleId}">${escapeHtml(title)}</h2>
+      </div>
+      <div class="${kind === 'word' ? 'practice-grid compact-grid' : 'sentence-list'}">
+        ${items.map((item) => itemCard(item, kind)).join('')}
+      </div>
+    </section>
+  `;
+}
+
 export function renderLesson(container, lesson) {
   document.title = `${lesson.title} | English Zero`;
 
@@ -226,6 +385,20 @@ export function renderLesson(container, lesson) {
 
     ${renderReviewSection(lesson)}
     ${renderNewSoundSection(lesson)}
+    ${renderSimplePracticeSection({
+      titleId: 'sound-drill-title',
+      eyebrow: 'Sound Drill 声音热身',
+      title: lesson.soundDrillTitleZh || '声音热身',
+      items: lesson.soundDrill,
+      kind: 'word'
+    })}
+    ${renderSimplePracticeSection({
+      titleId: 'blend-drill-title',
+      eyebrow: 'Blend 拼读',
+      title: lesson.blendDrillTitleZh || '拼读练习',
+      items: lesson.blendDrill,
+      kind: 'sentence'
+    })}
 
     <section class="lesson-section" aria-labelledby="words-title">
       <div class="section-heading">
@@ -246,6 +419,14 @@ export function renderLesson(container, lesson) {
         ${lesson.sentences.map((sentence) => itemCard(sentence, 'sentence')).join('')}
       </div>
     </section>
+
+    ${renderSimplePracticeSection({
+      titleId: 'classroom-title',
+      eyebrow: 'Classroom English 课堂英语',
+      title: lesson.classroomEnglishTitleZh || '今天能听懂',
+      items: lesson.classroomEnglish,
+      kind: 'sentence'
+    })}
 
     ${renderPracticeGuide(lesson)}
 

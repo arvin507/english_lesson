@@ -78,6 +78,11 @@ h2 {
   font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
+h3 {
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+}
+
 p {
   line-height: 1.6;
 }
@@ -169,6 +174,7 @@ button:disabled {
 }
 
 .progress-card,
+.lesson-map,
 .lesson-section,
 .recorder-card,
 .complete-panel,
@@ -338,6 +344,73 @@ button:disabled {
   margin-bottom: 14px;
 }
 
+.lesson-map-group {
+  margin-top: 22px;
+}
+
+.lesson-map-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.lesson-map-card {
+  display: grid;
+  gap: 6px;
+  min-height: 112px;
+  padding: 14px;
+  border: 2px solid var(--color-soft);
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.lesson-map-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 24px rgba(13, 148, 136, 0.12);
+  transform: translateY(-1px);
+}
+
+.lesson-map-card.is-complete {
+  background: rgba(204, 251, 241, 0.72);
+}
+
+.lesson-map-card.is-next {
+  border-color: var(--color-cta);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.14);
+}
+
+.lesson-map-status {
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--color-soft);
+  color: var(--color-primary-dark);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.lesson-map-card.is-next .lesson-map-status {
+  background: #ffedd5;
+  color: var(--color-cta-dark);
+}
+
+.lesson-map-title {
+  font-family: "Fredoka", "Trebuchet MS", Arial, sans-serif;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.lesson-map-focus {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 .practice-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -386,6 +459,17 @@ button:disabled {
   font-weight: 800;
 }
 
+.meaning-hint {
+  width: fit-content;
+  margin: -2px auto 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
 .recorder-card {
   display: grid;
   gap: 16px;
@@ -432,6 +516,10 @@ button:disabled {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .lesson-map-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .sentence-card {
     grid-template-columns: 1fr auto;
     align-items: center;
@@ -449,6 +537,10 @@ button:disabled {
 
   .card {
     padding: 24px;
+  }
+
+  .lesson-map-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

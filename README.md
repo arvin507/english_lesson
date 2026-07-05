@@ -30,12 +30,12 @@ http://localhost:8000/
 
 ## 当前课程内容
 
-当前 MVP 覆盖 Day 0 和第一周课程：
+当前页面已落地 Day 0 和前两周课程：
 
 - Day 0：学会听音、录音、回放、完成课程
-- Lesson 1：辅音开头音 m / s / t
-- Lesson 2：短元音 a
-- Lesson 3：把声音拼起来
-- Lesson 4：-at 词族
-- Lesson 5：-an 词族
-- Lesson 6：第一周综合复习
+- Week 1：辅音开头音、短元音 a、声音拼读、-at / -an 词族、综合复习
+- Week 2：辅音扩展、短元音 i、-it / -in / -ig 词族、阶段复习
+
+系统化 8 周课程设计见：
+
+- [`docs/curriculum-system-v2.md`](docs/curriculum-system-v2.md)
