@@ -28,6 +28,16 @@ http://localhost:8000/
 
 发布后访问 GitHub Pages 地址即可使用。进度会保存在当前设备浏览器的 `localStorage` 中，不依赖后端。
 
+## 更新后刷新缓存
+
+HTML 中的 CSS 和 JS 引用带有版本号，例如：
+
+```html
+assets/js/app.js?v=202607051548
+```
+
+每次更新课程内容、样式或脚本后，把 `index.html`、`lesson.html`、`onboarding.html` 和 `assets/js/app.js` 里的版本号统一改成新的时间戳，例如 `202607061030`。这样 GitHub Pages 发布后，浏览器会自动拉取新资源。
+
 ## 当前课程内容
 
 当前页面已按讲义融合版落地 Day 0 和前两周课程：

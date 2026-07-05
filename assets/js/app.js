@@ -1,8 +1,8 @@
-import { getLessonById, getNextLessonId, LESSONS } from './lessons.js';
-import { completeLesson, getNextRoute, getProgress } from './progress.js';
-import { initVoices, speakText, stopSpeech } from './audio.js';
-import { getRecorderState, playRecording, startRecording, stopRecording } from './recorder.js';
-import { renderHome, renderLesson, renderMessage, renderOnboarding } from './render.js';
+﻿import { getLessonById, getNextLessonId, LESSONS } from './lessons.js?v=202607051548';
+import { completeLesson, getNextRoute, getProgress } from './progress.js?v=202607051548';
+import { initVoices, speakText, stopSpeech } from './audio.js?v=202607051548';
+import { getRecorderState, playRecording, startRecording, stopRecording } from './recorder.js?v=202607051548';
+import { renderHome, renderLesson, renderMessage, renderOnboarding } from './render.js?v=202607051548';
 
 const container = document.querySelector('#app');
 

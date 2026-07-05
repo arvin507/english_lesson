@@ -176,6 +176,7 @@ button:disabled {
 .progress-card,
 .lesson-map,
 .lesson-section,
+.exercise-section,
 .recorder-card,
 .complete-panel,
 .message-card {
@@ -516,6 +517,82 @@ button:disabled {
   justify-content: flex-start;
 }
 
+.exercise-section {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 251, 235, 0.72));
+}
+
+.exercise-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.exercise-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid #fed7aa;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.exercise-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.exercise-number {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-cta);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.exercise-head h3 {
+  margin-bottom: 4px;
+}
+
+.exercise-head p {
+  margin-bottom: 0;
+  color: var(--color-muted);
+  font-weight: 800;
+}
+
+.exercise-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exercise-check {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 2px solid var(--color-soft);
+  border-radius: 999px;
+  background: rgba(240, 253, 250, 0.82);
+  color: var(--color-primary-dark);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.exercise-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+
 .recorder-card {
   display: grid;
   gap: 16px;
@@ -569,6 +646,10 @@ button:disabled {
   .sentence-card {
     grid-template-columns: 1fr auto;
     align-items: center;
+  }
+
+  .exercise-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .recorder-card {

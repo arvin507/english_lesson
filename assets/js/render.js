@@ -492,6 +492,88 @@ function renderPracticeGuide(lesson) {
   `;
 }
 
+function renderExerciseItem({ title, description, items = [], kind = 'word' }, index) {
+  return `
+    <article class="exercise-card">
+      <div class="exercise-head">
+        <span class="exercise-number">${index + 1}</span>
+        <div>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(description)}</p>
+        </div>
+      </div>
+      ${items.length
+        ? `<div class="exercise-actions">
+            ${items.map((item) => {
+              const practiceItem = normalizePracticeItem(item);
+              return `
+                <button class="btn btn-secondary" type="button" data-listen="${escapeHtml(practiceItem.listenText)}">
+                  ${escapeHtml(practiceItem.text)}
+                </button>
+              `;
+            }).join('')}
+          </div>`
+        : ''}
+      <label class="exercise-check">
+        <input type="checkbox">
+        <span>我完成了</span>
+      </label>
+    </article>
+  `;
+}
+
+function buildLessonExercises(lesson) {
+  const words = lesson.words || [];
+  const sentences = lesson.sentences || [];
+  const blends = lesson.blendDrill || [];
+  const oral = lesson.classroomEnglish || [];
+
+  return [
+    {
+      title: '听音找一找',
+      description: '先听按钮声音，再用手指出页面上对应的词。',
+      items: words.slice(0, 4),
+      kind: 'word'
+    },
+    {
+      title: '拼读小挑战',
+      description: '看拼读结构，自己先读，再点按钮听目标词。',
+      items: blends.slice(0, 4),
+      kind: 'sentence'
+    },
+    {
+      title: '短句跟读',
+      description: '每句先听一遍，再跟读两遍，最后选一句录音。',
+      items: sentences.slice(0, 3),
+      kind: 'sentence'
+    },
+    {
+      title: '口语跟说',
+      description: '把今天的口语句子当成真实场景说出来。',
+      items: oral.slice(0, 4),
+      kind: 'sentence'
+    }
+  ].filter((exercise) => exercise.items.length > 0);
+}
+
+function renderExerciseSection(lesson) {
+  const exercises = buildLessonExercises(lesson);
+
+  if (!exercises.length) {
+    return '';
+  }
+
+  return `
+    <section class="card exercise-section" aria-labelledby="exercise-title">
+      <p class="eyebrow">Practice Steps 练习闯关</p>
+      <h2 id="exercise-title">今天要完成这几步</h2>
+      <div class="exercise-grid">
+        ${exercises.map((exercise, index) => renderExerciseItem(exercise, index)).join('')}
+      </div>
+    </section>
+  `;
+}
+
 function renderSimplePracticeSection({ titleId, eyebrow, title, items, kind = 'sentence' }) {
   if (!items?.length) {
     return '';
@@ -575,6 +657,7 @@ export function renderLesson(container, lesson) {
     })}
 
     ${renderPracticeGuide(lesson)}
+    ${renderExerciseSection(lesson)}
 
     ${recorderPanel()}
 
