@@ -107,6 +107,82 @@ const MEANING_ZH = {
   'wig': '假发'
 };
 
+const LETTER_SOUND_META = {
+  A: { label: '/a/', listenText: 'ah' },
+  B: { label: '/b/', listenText: 'buh' },
+  C: { label: '/k/', listenText: 'kuh' },
+  D: { label: '/d/', listenText: 'duh' },
+  E: { label: '/e/', listenText: 'eh' },
+  F: { label: '/f/', listenText: 'fff' },
+  G: { label: '/g/', listenText: 'guh' },
+  H: { label: '/h/', listenText: 'huh' },
+  I: { label: '/i/', listenText: 'ih' },
+  J: { label: '/j/', listenText: 'juh' },
+  K: { label: '/k/', listenText: 'kuh' },
+  L: { label: '/l/', listenText: 'lll' },
+  M: { label: '/m/', listenText: 'mmm' },
+  N: { label: '/n/', listenText: 'nnn' },
+  O: { label: '/o/', listenText: 'ah' },
+  P: { label: '/p/', listenText: 'puh' },
+  Q: { label: '/kw/', listenText: 'kwuh' },
+  R: { label: '/r/', listenText: 'rrr' },
+  S: { label: '/s/', listenText: 'sss' },
+  T: { label: '/t/', listenText: 'tuh' },
+  U: { label: '/u/', listenText: 'uh' },
+  V: { label: '/v/', listenText: 'vvv' },
+  W: { label: '/w/', listenText: 'wuh' },
+  X: { label: '/ks/', listenText: 'ks' },
+  Y: { label: '/y/', listenText: 'yuh' },
+  Z: { label: '/z/', listenText: 'zzz' }
+};
+
+const LETTER_NAME_LISTEN_TEXT = {
+  A: 'ay',
+  B: 'bee',
+  C: 'see',
+  D: 'dee',
+  E: 'ee',
+  F: 'eff',
+  G: 'gee',
+  H: 'aitch',
+  I: 'eye',
+  J: 'jay',
+  K: 'kay',
+  L: 'ell',
+  M: 'em',
+  N: 'en',
+  O: 'oh',
+  P: 'pee',
+  Q: 'cue',
+  R: 'are',
+  S: 'ess',
+  T: 'tee',
+  U: 'you',
+  V: 'vee',
+  W: 'double you',
+  X: 'ex',
+  Y: 'why',
+  Z: 'zee'
+};
+
+function deriveLetterSoundMeta(text) {
+  const match = String(text || '').trim().match(/^([A-Z])([a-z])\s+(.+)$/);
+  if (!match) {
+    return {};
+  }
+
+  const letterName = match[1];
+  const wordText = match[3].trim();
+  const soundMeta = LETTER_SOUND_META[letterName] || {};
+
+  return {
+    letterName,
+    soundLabel: soundMeta.label || null,
+    soundListenText: soundMeta.listenText || null,
+    wordText
+  };
+}
+
 function getMeaningZh(text, explicitMeaning) {
   if (explicitMeaning && !explicitMeaning.includes('?')) {
     return explicitMeaning;
@@ -115,13 +191,37 @@ function getMeaningZh(text, explicitMeaning) {
   return MEANING_ZH[text] || null;
 }
 
+function deriveListenText(text) {
+  const value = String(text || '').trim();
+
+  if (value.includes('->')) {
+    return value.split('->').pop().trim();
+  }
+
+  if (/^[a-z](?:-[a-z]){1,3}$/i.test(value)) {
+    return value.replaceAll('-', '');
+  }
+
+  if (/^[a-z]-[a-z]{2,3}$/i.test(value)) {
+    return value.replaceAll('-', '');
+  }
+
+  return value.replaceAll(' / ', ', ');
+}
+
 function normalizePracticeItem(item) {
   if (item && typeof item === 'object') {
     const text = item.text;
+    const derived = deriveLetterSoundMeta(text);
 
     return {
       text,
-      listenText: item.listenText || text,
+      letterName: item.letterName || derived.letterName || null,
+      soundLabel: item.soundLabel || derived.soundLabel || null,
+      soundListenText: item.soundListenText || derived.soundListenText || null,
+      wordText: item.wordText || derived.wordText || null,
+      listenText: item.listenText || deriveListenText(text),
+      listenOptions: item.listenOptions || deriveListenOptions(text),
       hint: item.hint || null,
       meaningZh: getMeaningZh(text, item.meaningZh)
     };
@@ -129,24 +229,65 @@ function normalizePracticeItem(item) {
 
   return {
     text: item,
-    listenText: item,
+    listenText: deriveListenText(item),
+    listenOptions: deriveListenOptions(item),
     hint: null,
     meaningZh: getMeaningZh(item, null)
   };
 }
 
+function deriveListenOptions(text) {
+  const value = String(text || '').trim();
+
+  if (!value.includes(' / ')) {
+    return [];
+  }
+
+  return value
+    .split(' / ')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => ({
+      label: part,
+      listenText: deriveListenText(part)
+    }));
+}
+
 function itemCard(item, kind) {
   const practiceItem = normalizePracticeItem(item);
   const label = kind === 'word' ? `Listen to ${practiceItem.text}` : `Listen to sentence: ${practiceItem.text}`;
+  const hasSoundAction = Boolean(practiceItem.soundLabel && practiceItem.soundListenText);
+  const letterListenText = practiceItem.letterName ? LETTER_NAME_LISTEN_TEXT[practiceItem.letterName] || practiceItem.letterName : '';
+  const hasListenOptions = practiceItem.listenOptions.length > 0;
 
   return `
     <article class="practice-card ${kind === 'word' ? 'word-card' : 'sentence-card'}">
       <p class="practice-text">${escapeHtml(practiceItem.text)}</p>
+      ${practiceItem.letterName ? `<p class="letter-note">字母名：${escapeHtml(practiceItem.letterName)}；单词里的音：${escapeHtml(practiceItem.soundLabel || '')}</p>` : ''}
+      ${!practiceItem.letterName && practiceItem.soundLabel ? `<p class="sound-label">字母音：${escapeHtml(practiceItem.soundLabel)}</p>` : ''}
       ${practiceItem.meaningZh ? `<p class="meaning-hint">意思：${escapeHtml(practiceItem.meaningZh)}</p>` : ''}
       <p class="practice-hint">${practiceItem.hint ? escapeHtml(practiceItem.hint) : '先听，再读 / Listen, then say it.'}</p>
-      <button class="btn btn-listen" type="button" data-listen="${escapeHtml(practiceItem.listenText)}" aria-label="${escapeHtml(label)}">
-        Listen 听
-      </button>
+      <div class="card-actions">
+        ${hasSoundAction ? `
+          <button class="btn btn-listen" type="button" data-listen="${escapeHtml(practiceItem.soundListenText)}" aria-label="Listen to sound ${escapeHtml(practiceItem.soundLabel)}">
+            单词里的音
+          </button>
+        ` : ''}
+        ${practiceItem.letterName ? `
+          <button class="btn btn-secondary" type="button" data-listen="${escapeHtml(letterListenText)}" aria-label="Listen to letter name ${escapeHtml(practiceItem.letterName)}">
+            字母名 ${escapeHtml(practiceItem.letterName)}
+          </button>
+        ` : ''}
+        ${hasListenOptions
+          ? practiceItem.listenOptions.map((option) => `
+            <button class="btn btn-listen" type="button" data-listen="${escapeHtml(option.listenText)}" aria-label="Listen to ${escapeHtml(option.label)}">
+              ${escapeHtml(option.label)}
+            </button>
+          `).join('')
+          : `<button class="btn ${hasSoundAction ? 'btn-secondary' : 'btn-listen'}" type="button" data-listen="${escapeHtml(practiceItem.listenText)}" aria-label="${escapeHtml(label)}">
+              ${practiceItem.wordText ? 'Word 例词' : 'Listen 听'}
+            </button>`}
+      </div>
     </article>
   `;
 }
@@ -309,12 +450,17 @@ function renderNewSoundSection(lesson) {
     return '';
   }
 
+  const conceptZh = lesson.conceptZh || (lesson.phase === 'alphabet_sounds'
+    ? '字母名是字母自己的名字；字母音是它进入单词后常用的声音。读单词时不要读字母名，要听这个字母在例词里的 sound。'
+    : '');
+
   return `
     <section class="lesson-section" aria-labelledby="sound-title">
       <div class="section-heading">
         <p class="eyebrow">New sound 新内容</p>
         <h2 id="sound-title">${bilingualText(lesson.newSound.label, lesson.newSound.labelZh)}</h2>
         <p class="section-copy">${bilingualText(lesson.newSound.text, lesson.newSound.textZh)}</p>
+        ${conceptZh ? `<p class="concept-note">${escapeHtml(conceptZh)}</p>` : ''}
       </div>
       <div class="button-row sound-examples">
         ${lesson.newSound.examples.map((example) => {
@@ -422,8 +568,8 @@ export function renderLesson(container, lesson) {
 
     ${renderSimplePracticeSection({
       titleId: 'classroom-title',
-      eyebrow: 'Classroom English 课堂英语',
-      title: lesson.classroomEnglishTitleZh || '今天能听懂',
+      eyebrow: 'Oral English 口语',
+      title: lesson.classroomEnglishTitleZh || '今天会说',
       items: lesson.classroomEnglish,
       kind: 'sentence'
     })}

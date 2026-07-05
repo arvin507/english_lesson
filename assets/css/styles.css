@@ -222,6 +222,19 @@ button:disabled {
   font-weight: 800;
 }
 
+.concept-note {
+  max-width: 52rem;
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border: 2px solid #fed7aa;
+  border-radius: 16px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
 .btn {
   display: inline-flex;
   min-width: 44px;
@@ -459,6 +472,28 @@ button:disabled {
   font-weight: 800;
 }
 
+.sound-label {
+  width: fit-content;
+  margin: -2px auto 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--color-soft);
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.letter-note {
+  width: fit-content;
+  margin: -2px auto 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--color-soft);
+  color: var(--color-primary-dark);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
 .meaning-hint {
   width: fit-content;
   margin: -2px auto 0;
@@ -468,6 +503,17 @@ button:disabled {
   color: #92400e;
   font-size: 0.9rem;
   font-weight: 900;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sentence-card .card-actions {
+  justify-content: flex-start;
 }
 
 .recorder-card {

@@ -30,12 +30,14 @@ http://localhost:8000/
 
 ## 当前课程内容
 
-当前页面已落地 Day 0 和前两周课程：
+当前页面已按讲义融合版落地 Day 0 和前两周课程：
 
 - Day 0：学会听音、录音、回放、完成课程
-- Week 1：辅音开头音、短元音 a、声音拼读、-at / -an 词族、综合复习
-- Week 2：辅音扩展、短元音 i、-it / -in / -ig 词族、阶段复习
+- Week 1：字母声音地图 A-Q
+- Week 2：完成 26 个字母声音，并进入短音 a/e 词族
 
-系统化 8 周课程设计见：
+系统化课程设计见：
 
+- [`docs/curriculum-shirley-integrated-v3.md`](docs/curriculum-shirley-integrated-v3.md)
+- [`docs/oral-english-integration.md`](docs/oral-english-integration.md)
 - [`docs/curriculum-system-v2.md`](docs/curriculum-system-v2.md)
